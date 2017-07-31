@@ -16,7 +16,4 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::middleware('auth:api')->get('/checkBind/{openid}','EarlySign@checkBind');
-Route::middleware("auth:api")->get('/checkSign/{openid}','EarlySign@checkSign');
-Route::middleware('auth:api')->post('/bind','EarlySign@bind');
-Route::middleware('auth:api')->any('/sign/{openid}','EarlySign@sign');
+

@@ -16,5 +16,7 @@ Route::get('/', function () {
 });
 Route::get('/checkBind/{openid}','EarlySign@checkBind');
 Route::get('/checkSign/{openid}','EarlySign@checkSign');
-Route::post('/bind','EarlySign@bind');
+Route::any('/bind','EarlySign@Bind');
 Route::any('/sign/{openid}','EarlySign@sign');
+Route::get('queryById/{flag}/{openid}','EarlySign@queryById');
+Route::any('/queryMany/{flag}/{num}','EarlySign@querymany');

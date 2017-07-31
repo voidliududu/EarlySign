@@ -13,5 +13,9 @@ class VerifyCsrfToken extends BaseVerifier
      */
     protected $except = [
         //
+        'checkBind/{openid}',
+        'checkSign/{openid}',
+        'sign/{openid}',
+        'bind',
     ];
 }

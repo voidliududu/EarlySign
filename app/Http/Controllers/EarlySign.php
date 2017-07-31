@@ -49,7 +49,7 @@ class EarlySign extends Controller
     }
 
     public function checkSign($openid){
-        $state = $this->_checkSign($openid)?'no':'ok';
+        $state = $this->_checkSign($openid)?'0':'1';  //0 signed, 1 not signed
         return response()->json(['state' => $state]);
     }
     public function checkBind($openid){
@@ -62,15 +62,20 @@ class EarlySign extends Controller
      * Name
      * NickName
      * openid
+     *
      * */
     public function Bind(Request $req){
-        $user = new \App\SignUser;
-        $user->openid = $req->input('openid');
-        $user->schoolNum = $req->input('CSUid');
-        $user->name = $req->input('NickName');
-        $user->bind_time = time();
-        if($user->save()) return response()->json(['result' => 'ok']);
-        else return response()->json(['result' => 'no']);
+        if(!($openid = $req->input('openid')))
+            return response()->json(['state' => 0,'msg' => 'openid required']);
+        $user = \App\SignUser::find($openid)?:(new \App\SignUser);
+        $user->openid = $openid;
+        if($req->input('CSUid'))
+            $user->schoolNum = $req->input('CSUid');
+        if($req->input('NickName'))
+            $user->name = $req->input('NickName');
+        $user->bind_time = date("y-m-d h:m:s",time());
+        if(!$user->save()) return response()->json(['state' => '0','msg' => 'db error']);
+        else return response()->json(['state' => '1']);
     }
 
     public function queryById($timeFlag,$openid){
@@ -97,7 +102,7 @@ class EarlySign extends Controller
                 return response()->json(empty($user)?[]:$user);
                 break;
             case 'allday':
-                $users = \App\SignUser::all()->orderBy('score','desc')->take($num)->get();
+                $users = \App\SignUser::orderBy('score','desc')->take($num)->get();
                 $res = [];
                 foreach ($users as $user){
                     array_push($res,$this->_userToArray($user));
@@ -139,7 +144,7 @@ class EarlySign extends Controller
             $user->score += $this->_scoreHandler($user);
             $user->save();
             return response()->json([
-                'state' => 'ok',
+                'state' => '1',
                 'time' => $time,
                 'rank' => $lastRank+1
                 ]);
